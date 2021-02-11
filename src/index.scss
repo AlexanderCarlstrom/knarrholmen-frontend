@@ -95,8 +95,8 @@ code {
       flex: 1;
       display: grid;
       grid-template-areas:
-            'title open'
-            'location .';
+        'title open'
+        'location .';
 
       @media (min-width: $xl) {
         flex: none;
@@ -112,7 +112,6 @@ code {
         @media (min-width: $md) {
           font-size: 12px;
         }
-
 
         &.title {
           color: #000;

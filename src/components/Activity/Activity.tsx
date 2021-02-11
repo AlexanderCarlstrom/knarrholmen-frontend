@@ -1,25 +1,38 @@
-import { Card, Col, DatePicker, Divider, message, Row, Space, Spin, Typography } from 'antd';
+import { Button, Card, Col, DatePicker, Divider, message, Modal, Row, Space, Spin, Typography } from 'antd';
 import { RouteComponentProps } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { DownOutlined } from '@ant-design/icons';
 import { AxiosResponse } from 'axios';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { ActivitiesResponse, BookingsResponse } from '../../types/ApiReponse';
 import { CapitalizeFirstLetter } from '../../utils/CapitalizeFirstLetter';
 import { useBreakpoint } from '../../context/BreakpointContext';
+import { privateFetch, publicFetch } from '../../utils/axios';
 import { ActivityItem } from '../../types/ActivityItem';
-import { publicFetch } from '../../utils/axios';
+import { ApiResponse } from './../../types/ApiReponse';
+import { useAuth } from '../../context/AuthContext';
 import OpenHours from '../Shared/OpenHours';
 import './Activity.scss';
 
 const { Text, Title } = Typography;
 
-const Activity = ({ match, history }: RouteComponentProps<Params>) => {
+// Set default timezone
+moment.tz.setDefault('Europe/Stockholm');
+
+const Activity = ({ match, history, location }: RouteComponentProps<Params>) => {
+  const [modalProps, setModalProps] = useState<BookingModalProps>(null);
   const [activity, setActivity] = useState<ActivityItem>(null);
+  const [booking, setBooking] = useState<BookingProps>(null);
+  const [visible, setVisible] = useState<boolean>(false);
   const width = useBreakpoint();
+  const { user } = useAuth();
 
   useEffect(() => {
-    console.log(moment().week());
+    getActivity();
+  }, []);
+
+  const getActivity = () => {
     publicFetch
       .get<ActivitiesResponse>('activities/' + match.params.id)
       .then((res: AxiosResponse<ActivitiesResponse>) => {
@@ -30,16 +43,109 @@ const Activity = ({ match, history }: RouteComponentProps<Params>) => {
         message.error('Could not get activity');
         history.push('/activities');
       });
-  }, []);
+  };
+
+  const showBookingModal = (time: number, date: moment.Moment) => {
+    const start = (time < 10 ? `0${time}` : `${time}`) + ':00';
+    const end = (time + 1 < 10 ? `0${time + 1}` : `${time + 1}`) + ':00';
+    setVisible(true);
+    setModalProps({
+      title: CapitalizeFirstLetter(activity.name),
+      date: date.format('ddd, Do MMM'),
+      time: `${start} - ${end}`,
+    });
+    setBooking({
+      date,
+      time,
+    });
+  };
+
+  const resetBooking = () => {
+    setVisible(false);
+    setModalProps(null);
+    setBooking(null);
+  };
+
+  const onOk = () => {
+    if (booking) {
+      console.log(booking.date.startOf('day'));
+      const start = booking.date.startOf('day').hours(booking.time).format();
+      const end = moment(start)
+        .hours(booking.time + 1)
+        .format();
+      console.log(start);
+      console.log(end);
+      privateFetch
+        .post<ApiResponse>('bookings', { start, end, activityId: activity.id })
+        .then((res: AxiosResponse<ApiResponse>) => {
+          if (res?.data?.success) {
+            resetBooking();
+            getActivity();
+            message.success('Successfully booked activity');
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          message.error('Could not book activity, please try again');
+          return err;
+        });
+    } else {
+      resetBooking();
+      message.error('Could not book activity, please try again');
+    }
+  };
 
   return (
     <>
       {activity ? (
-        width > 748 ? (
-          <DesktopActivity activity={activity} />
-        ) : (
-          <MobileActivity activity={activity} />
-        )
+        <>
+          {width > 770 ? (
+            <DesktopActivity activity={activity} showBookingModal={showBookingModal} />
+          ) : (
+            <MobileActivity activity={activity} showBookingModal={showBookingModal} />
+          )}
+          <Modal
+            visible={visible}
+            className="modal"
+            okButtonProps={{ disabled: user === null }}
+            okText="BOOK"
+            cancelText="CANCEL"
+            title="Confirm Booking"
+            width={400}
+            onOk={onOk}
+            onCancel={resetBooking}
+          >
+            {user === null ? (
+              <>
+                <Title level={4} className="modal-title">
+                  Log in to book activity
+                </Title>
+                <DownOutlined className="caret-down" />
+                <Button
+                  type="primary"
+                  shape="round"
+                  size="large"
+                  onClick={() => history.push('/auth/login', { from: location })}
+                  className="login-btn"
+                >
+                  LOG IN
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="modal-content">
+                  <Title level={3} className="title">
+                    {modalProps?.title}
+                  </Title>
+                  <div className="column">
+                    <Text className="date">{modalProps?.date}</Text>
+                    <Text className="time">{modalProps?.time}</Text>
+                  </div>
+                </div>
+              </>
+            )}
+          </Modal>
+        </>
       ) : (
         <Spin size="large">Loading</Spin>
       )}
@@ -111,17 +217,6 @@ const DesktopActivity = ({ activity }: ActivityProps) => {
           <Col span={18} className="activity-container">
             <Card title={<DatePicker value={date} onChange={(date) => setDate(date)} picker="week" />} className="card">
               {times ? (
-                // <div className="times-week">
-                //   <div className="header">
-                //     <div className="corner" />
-                //   </div>
-                //   <div className="body">
-                //     <div className="column-header">
-                //
-                //     </div>
-                //     <div className="grid"></div>
-                //   </div>
-                // </div>
                 <table className="times-week">
                   <thead className="table-header">
                     <tr className="table-top-header">
@@ -160,24 +255,28 @@ const DesktopActivity = ({ activity }: ActivityProps) => {
   );
 };
 
-const MobileActivity = ({ activity }: ActivityProps) => {
+const MobileActivity = ({ activity, showBookingModal }: ActivityProps) => {
   const [times, setTimes] = useState<number[]>();
   const [date, setDate] = useState(moment());
 
   useEffect(() => {
-    if (activity && date) {
-      // Get bookings for activity in selected date
-      publicFetch
-        .get<BookingsResponse>('bookings', {
-          params: { date: date.toDate(), activityId: activity.id },
-        })
-        .then((res: AxiosResponse<BookingsResponse>) => {
-          setTimes(res.data.day);
-        })
-        .catch((err) => {
-          console.error(err);
-          message.error('Could not get bookings');
-        });
+    if (activity) {
+      if (!date) {
+        setTimes([]);
+      } else {
+        // Get bookings for activity in selected date
+        publicFetch
+          .get<BookingsResponse>('bookings', {
+            params: { date: date.toDate(), activityId: activity.id },
+          })
+          .then((res: AxiosResponse<BookingsResponse>) => {
+            setTimes(res.data.day);
+          })
+          .catch((err) => {
+            console.error(err);
+            message.error('Could not get bookings');
+          });
+      }
     }
   }, [activity, date]);
 
@@ -201,10 +300,12 @@ const MobileActivity = ({ activity }: ActivityProps) => {
               {times.map((time) => {
                 const start = time < 10 ? '0' + time : time.toString();
                 return (
-                  <Typography key={time} className="time">
-                    {start}
-                    <sup>00</sup>
-                  </Typography>
+                  <div key={time} className="time" onClick={() => showBookingModal(time, date)}>
+                    <Typography>
+                      {start}
+                      <sup>00</sup>
+                    </Typography>
+                  </div>
                 );
               })}
             </div>
@@ -233,10 +334,22 @@ const fakeBookings: number[][] = [
 
 type ActivityProps = {
   activity: ActivityItem;
+  showBookingModal: (time: number, date: moment.Moment) => void;
 };
 
 type Params = {
   id: string;
+};
+
+type BookingModalProps = {
+  title: string;
+  date: string;
+  time: string;
+};
+
+type BookingProps = {
+  date: moment.Moment;
+  time: number;
 };
 
 export default Activity;

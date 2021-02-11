@@ -24,7 +24,7 @@ const { SubMenu } = Menu;
 
 const Navbar = (props: RouteComponentProps) => {
   const width = useBreakpoint();
-  const breakpoint = 1024;
+  const breakpoint = 768;
 
   return (
     <React.Fragment>
