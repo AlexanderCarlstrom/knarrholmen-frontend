@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 
 import { UserResponse } from '../types/ApiReponse';
 
-const publicFetch = axios.create({ baseURL: process.env.REACT_APP_API_URL });
+const publicFetch = axios.create({ baseURL: process.env.REACT_APP_API_URL, withCredentials: true });
 const privateFetch = axios.create({ baseURL: process.env.REACT_APP_API_URL, withCredentials: true });
 
 const setUpAuthInterceptors = (loginWithToken: () => AxiosResponse<UserResponse>) => {
