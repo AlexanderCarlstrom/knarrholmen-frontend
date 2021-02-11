@@ -1,0 +1,77 @@
+@import '../../variables.scss';
+
+.home {
+  width: 100%;
+  height: calc(100vh - 134px);
+  background: #fff;
+
+  .container {
+    padding-top: 40px;
+
+    .home-title {
+      font-size: 30px;
+      font-family: $quicksand;
+      text-align: center;
+      margin-bottom: 0;
+
+      @media (min-width: $md) {
+        font-size: 40px;
+      }
+      @media (min-width: $xl) {
+        font-size: 50px;
+      }
+    }
+
+    .home-subtitle {
+      font-family: $quicksand;
+      text-align: center;
+      font-size: 16px;
+
+      @media (min-width: $md) {
+        font-size: 22px;
+      }
+      @media (min-width: $xl) {
+        font-size: 26px;
+      }
+    }
+
+    .search-field {
+      margin: 20px auto 0 auto;
+      width: 306px;
+      display: block;
+
+      @media (min-width: $md) {
+        width: 296px;
+      }
+      @media (min-width: $xl) {
+        width: 324px;
+      }
+
+      ::placeholder,
+      ::-ms-input-placeholder {
+        font-family: $openSans;
+        font-size: 12px;
+      }
+    }
+
+    .showMore {
+      margin: 20px auto;
+      display: block;
+      color: #000;
+      border: 1px solid #000;
+      font-family: $openSans;
+      font-size: 12px;
+      width: 120px;
+      height: 35px;
+      line-height: 35px;
+      vertical-align: middle;
+      text-transform: uppercase;
+      padding: 0 15px;
+
+      &:hover {
+        color: $primary;
+        border-color: $primary;
+      }
+    }
+  }
+}

@@ -1,0 +1,74 @@
+@import '../../variables.scss';
+
+.activities {
+  min-height: $trimmedHeight;
+  background: #fff;
+
+  .container {
+    padding-top: 40px;
+
+    .title {
+      font-family: $lato;
+      margin: auto;
+      font-size: 30px;
+      width: 306px;
+
+      @media (min-width: $md) {
+        width: 452px;
+      }
+      @media (min-width: $xl) {
+        width: 550px;
+      }
+    }
+
+    .search-field {
+      margin: 20px auto 0 auto;
+      width: 306px;
+      display: block;
+
+      @media (min-width: $md) {
+        width: 452px;
+      }
+      @media (min-width: $xl) {
+        width: 550px;
+      }
+
+      ::placeholder,
+      ::-ms-input-placeholder {
+        font-family: $openSans;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .activity-list {
+    @media (min-width: $xl) {
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .activity-item {
+      @media (min-width: $xl) {
+        width: 550px;
+        padding: 20px;
+        margin: 10px auto;
+        border: 1px solid $lightGray;
+        display: block;
+      }
+
+      .img {
+        @media (min-width: $xl) {
+          width: 80px;
+          height: 80px;
+          margin: 0 20px 0 0;
+        }
+      }
+
+      .info {
+        @media (min-width: $xl) {
+          padding: 0;
+        }
+      }
+    }
+  }
+}
