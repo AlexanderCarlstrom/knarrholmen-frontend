@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 import './Footer.scss';
 
 const Footer = () => {
-  return <Layout.Footer className="footer">Footer</Layout.Footer>;
+  return <Layout.Footer className="footer"></Layout.Footer>;
 };
 
 export default Footer;
