@@ -194,7 +194,7 @@ const DesktopActivity = ({ activity, showBookingModal }: ActivityProps) => {
             <Text className="description">{activity.description ? activity.description : ''}</Text>
           </Col>
           <Col span={18} className="activity-container">
-            <Card title={<DatePicker value={date} onChange={(date) => setDate(date)} picker="week" />} className="card">
+            <Card title={<DatePicker value={date} onChange={(date) => setDate(date)} />} className="card">
               {times ? (
                 <div className="times">
                   {times.map((time) => {
@@ -285,15 +285,40 @@ const MobileActivity = ({ activity, showBookingModal }: ActivityProps) => {
   );
 };
 
-const fakeBookings: number[][] = [
-  [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
+// const fakeBookings: number[][] = [
+//   [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+// ];
+
+// <table className="times-week">
+//   <thead className="table-header">
+//     <tr className="table-top-header">
+//       <th className="table-header-item table-header-corner"></th>
+//       {openHours.map((value) => (
+//         <th scope="col" className="table-header-item" key={value}>
+//           {value < 10 ? '0' + value : value}
+//         </th>
+//       ))}
+//     </tr>
+//   </thead>
+//   <tbody className="table-body">
+//     {weekDays.map((day, dayIndex) => (
+//       <tr key={day}>
+//         <th className="table-column-header-item">{day}</th>
+//         {openHours.map((hour, hourIndex) => (
+//           <td className={`table-item ${times[dayIndex][hourIndex] === 2 ? 'booked' : ''}`} key={day + ':' + hour}>
+//             {dayIndex + ':' + hourIndex}
+//           </td>
+//         ))}
+//       </tr>
+//     ))}
+//   </tbody>
+// </table>;
 
 type ActivityProps = {
   activity: ActivityItem;

@@ -1,17 +1,17 @@
+import { Button, Collapse, message, Result, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Button, Collapse, message, Spin, Typography } from 'antd';
 import { AxiosResponse } from 'axios';
 import moment from 'moment-timezone';
 
+import { CapitalizeFirstLetter } from './../../utils/CapitalizeFirstLetter';
 import { BookingsResponse } from '../../types/ApiReponse';
+import { ApiResponse } from './../../types/ApiReponse';
+import { CalendarOutlined } from '@ant-design/icons';
 import { privateFetch } from '../../utils/axios';
 import { Booking } from '../../types/Booking';
 import './Bookings.scss';
-import { CapitalizeFirstLetter } from './../../utils/CapitalizeFirstLetter';
-import { getIn } from 'formik';
-import { ApiResponse } from './../../types/ApiReponse';
+import 'antd/dist/antd.css';
 
-const { Title, Text } = Typography;
 const { Panel } = Collapse;
 
 const Bookings = () => {
@@ -63,38 +63,46 @@ const Bookings = () => {
   return (
     <div className="bookings">
       <div className="container">
-        <span className="page-title">Bookings</span>
-        <Collapse className="collapse" expandIconPosition="right">
+        <div className="bookings-container">
+          <span className="page-title">
+            <span>Upcoming Bookings</span>
+          </span>
           {bookings !== null ? (
-            bookings.map((booking, index) => (
-              <Panel
-                key={index}
-                className="panel"
-                header={
-                  <div className="panel-header">
-                    <div className="column">
-                      <span className="activity-name">{CapitalizeFirstLetter(booking.activity.name)}</span>
-                      <span className="info">{CapitalizeFirstLetter(booking.activity.location)}</span>
+            bookings.length !== 0 ? (
+              <Collapse className="collapse" expandIconPosition="right" bordered={false}>
+                {bookings.map((booking, index) => (
+                  <Panel
+                    key={index}
+                    className="panel"
+                    header={
+                      <div className="panel-header">
+                        <div className="column">
+                          <span className="activity-name">{CapitalizeFirstLetter(booking.activity.name)}</span>
+                          <span className="info">{CapitalizeFirstLetter(booking.activity.location)}</span>
+                        </div>
+                        <div className="column">
+                          <span className="start-day">{getDayString(booking.start)}</span>
+                          <span className="info">{getInterval(booking.start, booking.end)}</span>
+                        </div>
+                      </div>
+                    }
+                  >
+                    <div className="panel-content">
+                      <div className="spacer"></div>
+                      <Button danger className="cancel-btn" onClick={() => cancelBooking(booking.id)}>
+                        Cancel Booking
+                      </Button>
                     </div>
-                    <div className="column">
-                      <span className="start-day">{getDayString(booking.start)}</span>
-                      <span className="info">{getInterval(booking.start, booking.end)}</span>
-                    </div>
-                  </div>
-                }
-              >
-                <div className="panel-content">
-                  <div className="spacer"></div>
-                  <Button danger className="cancel-btn" onClick={() => cancelBooking(booking.id)}>
-                    Cancel Booking
-                  </Button>
-                </div>
-              </Panel>
-            ))
+                  </Panel>
+                ))}
+              </Collapse>
+            ) : (
+              <Result icon={<CalendarOutlined />} title="You have no upcoming bookings" className="result" />
+            )
           ) : (
             <Spin size="large">Loading</Spin>
           )}
-        </Collapse>
+        </div>
       </div>
     </div>
   );
