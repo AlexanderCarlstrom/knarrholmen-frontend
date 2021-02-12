@@ -29,7 +29,7 @@ const AuthProvider = ({ children }: ContainterProps) => {
   };
 
   const logout = () => {
-    publicFetch.post('auth/logout', { userId: user.id }, { withCredentials: true }).then(() => {
+    publicFetch.post('auth/logout', { userId: user.id }).then(() => {
       setUser(null);
     });
   };
