@@ -4,6 +4,7 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-family: $openSans;
 }
 
 code {
@@ -139,4 +140,15 @@ code {
 
 .open-hours {
   font-size: 12px;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 600;
+  font-family: $lato;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
 }

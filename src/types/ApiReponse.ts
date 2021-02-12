@@ -21,5 +21,5 @@ export interface ActivitiesResponse extends ApiResponse {
 export interface BookingsResponse extends ApiResponse {
   week?: number[][];
   day?: number[];
-  bookings?: Booking[];
+  userBookings?: Booking[];
 }

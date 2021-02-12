@@ -59,7 +59,7 @@ const Activities = ({ location, history }: RouteComponentProps<Params>) => {
   return (
     <div className="activities">
       <div className="container">
-        <h2 className="title">Find activities</h2>
+        <h2 className="page-title title">Find activities</h2>
         <Search
           placeholder="Find activities..."
           className="search-field"

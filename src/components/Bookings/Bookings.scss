@@ -1,0 +1,50 @@
+@import '../../variables.scss';
+
+.bookings {
+  background: #fff;
+  height: 100%;
+  min-height: $trimmedHeight;
+
+  .container {
+    padding-top: 40px;
+
+    .collapse {
+      width: 100%;
+      margin-top: 10px;
+
+      .panel {
+        .panel-header {
+          display: flex;
+          justify-content: space-between;
+
+          .activity-name {
+            font-family: $openSans !important;
+            font-size: 16px;
+            font-weight: 500;
+            color: #000;
+          }
+
+          .start-day {
+            font-family: $openSans;
+            font-size: 14px;
+            color: #000;
+          }
+
+          .info {
+            font-size: 12px;
+            color: rgba(#000, 0.7);
+
+            &:last-of-type {
+              text-align: right;
+            }
+          }
+        }
+
+        .panel-content {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+}

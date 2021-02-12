@@ -153,11 +153,9 @@ const Activity = ({ match, history, location }: RouteComponentProps<Params>) => 
   );
 };
 
-const DesktopActivity = ({ activity }: ActivityProps) => {
-  const [openHours, setOpenHours] = useState<number[]>(null);
-  const [date, setDate] = useState<moment.Moment>(moment());
-  const [times, setTimes] = useState<number[][]>(null);
-  const [weekDays, setWeekDays] = useState<string[]>();
+const DesktopActivity = ({ activity, showBookingModal }: ActivityProps) => {
+  const [times, setTimes] = useState<number[]>();
+  const [date, setDate] = useState(moment());
 
   useEffect(() => {
     if (activity) {
@@ -165,39 +163,20 @@ const DesktopActivity = ({ activity }: ActivityProps) => {
         setTimes([]);
       } else {
         // Get bookings for activity in selected date
-        // publicFetch
-        //   .get<BookingsResponse>('bookings', {
-        //     params: { date: date.toDate(), activityId: activity.id },
-        //   })
-        //   .then((res: AxiosResponse<BookingsResponse>) => {
-        //     setTimes(res.data.day);
-        //   })
-        //   .catch((err) => {
-        //     console.error(err);
-        //     message.error('Could not get bookings');
-        //   });
-        createOpenHoursArray();
-        createWeekDaysArray();
-        setTimes(fakeBookings);
+        publicFetch
+          .get<BookingsResponse>('bookings', {
+            params: { date: date.toDate(), activityId: activity.id },
+          })
+          .then((res: AxiosResponse<BookingsResponse>) => {
+            setTimes(res.data.day);
+          })
+          .catch((err) => {
+            console.error(err);
+            message.error('Could not get bookings');
+          });
       }
     }
   }, [activity, date]);
-
-  const createOpenHoursArray = () => {
-    const arr = [];
-    for (let i = activity.open; i < activity.close; i++) {
-      arr.push(i);
-    }
-    setOpenHours(arr);
-  };
-
-  const createWeekDaysArray = () => {
-    const arr: string[] = [];
-    for (let i = 1; i < 8; i++) {
-      arr.push(date.day(i).format('MMM Do'));
-    }
-    setWeekDays(arr);
-  };
 
   return (
     <div className="activity">
@@ -217,33 +196,19 @@ const DesktopActivity = ({ activity }: ActivityProps) => {
           <Col span={18} className="activity-container">
             <Card title={<DatePicker value={date} onChange={(date) => setDate(date)} picker="week" />} className="card">
               {times ? (
-                <table className="times-week">
-                  <thead className="table-header">
-                    <tr className="table-top-header">
-                      <th className="table-header-item table-header-corner"></th>
-                      {openHours.map((value) => (
-                        <th scope="col" className="table-header-item" key={value}>
-                          {value < 10 ? '0' + value : value}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="table-body">
-                    {weekDays.map((day, dayIndex) => (
-                      <tr key={day}>
-                        <th className="table-column-header-item">{day}</th>
-                        {openHours.map((hour, hourIndex) => (
-                          <td
-                            className={`table-item ${times[dayIndex][hourIndex] === 2 ? 'booked' : ''}`}
-                            key={day + ':' + hour}
-                          >
-                            {dayIndex + ':' + hourIndex}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="times">
+                  {times.map((time) => {
+                    const start = time < 10 ? '0' + time : time.toString();
+                    return (
+                      <div key={time} className="time" onClick={() => showBookingModal(time, date)}>
+                        <Typography>
+                          {start}
+                          <sup>00</sup>
+                        </Typography>
+                      </div>
+                    );
+                  })}
+                </div>
               ) : (
                 <Spin size="large">Loading</Spin>
               )}
@@ -313,9 +278,7 @@ const MobileActivity = ({ activity, showBookingModal }: ActivityProps) => {
             <Spin size="large">Loading</Spin>
           )}
         </Card>
-        <Title level={2} className="category-title">
-          About
-        </Title>
+        <span className="page-title category-title">About</span>
         <Text>{activity.description ? activity.description : ''}</Text>
       </div>
     </div>
