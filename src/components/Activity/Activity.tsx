@@ -2,7 +2,7 @@ import { Button, Card, Col, DatePicker, Divider, message, Modal, Row, Space, Spi
 import { RouteComponentProps } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import moment from 'moment-timezone';
 
 import { ActivitiesResponse, BookingsResponse } from '../../types/ApiReponse';
@@ -68,14 +68,12 @@ const Activity = ({ match, history, location }: RouteComponentProps<Params>) => 
 
   const onOk = () => {
     if (booking) {
-      console.log(booking.date.startOf('day'));
       const start = booking.date.startOf('day').hours(booking.time).format().split('+')[0];
       const end = moment(start)
         .hours(booking.time + 1)
         .format()
         .split('+')[0];
-      console.log(start);
-      console.log(end);
+
       privateFetch
         .post<ApiResponse>('bookings', { start, end, activityId: activity.id })
         .then((res: AxiosResponse<ApiResponse>) => {
@@ -85,9 +83,11 @@ const Activity = ({ match, history, location }: RouteComponentProps<Params>) => 
             message.success('Successfully booked activity');
           }
         })
-        .catch((err) => {
+        .catch((err: AxiosError<ApiResponse>) => {
           console.error(err);
-          message.error('Could not book activity, please try again');
+          message.error(
+            err.response?.data?.message ? err.response?.data?.message : 'Could not book activity, please try again',
+          );
           return err;
         });
     } else {
