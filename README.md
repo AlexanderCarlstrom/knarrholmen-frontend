@@ -1,3 +1,3 @@
 # Knarrholmen Booking
 
-Can be found at https://knarrholmen-booking.herokuapp.com/
+Built with React and hosted at https://knarrholmen-booking.herokuapp.com/
