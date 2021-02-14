@@ -69,10 +69,11 @@ const Activity = ({ match, history, location }: RouteComponentProps<Params>) => 
   const onOk = () => {
     if (booking) {
       console.log(booking.date.startOf('day'));
-      const start = booking.date.startOf('day').hours(booking.time).format();
+      const start = booking.date.startOf('day').hours(booking.time).format().split('+')[0];
       const end = moment(start)
         .hours(booking.time + 1)
-        .format();
+        .format()
+        .split('+')[0];
       console.log(start);
       console.log(end);
       privateFetch
